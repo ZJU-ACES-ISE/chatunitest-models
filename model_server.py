@@ -1,8 +1,8 @@
 CUDA_VISIBLE_DEVICES=1
 from flask import Flask, request, jsonify
-import sys
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
+from transformers import LlamaForCausalLM, AutoTokenizer, GenerationConfig
+from peft import PeftModel
 
 app = Flask(__name__)
 
@@ -13,7 +13,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_path)
 
 model = LlamaForCausalLM.from_pretrained(
     "codellama/CodeLlama-7b-Instruct-hf",
-    load_in_8bit=load_8bit,
+    load_in_8bit=True,
     torch_dtype=torch.float16,
     device_map="auto",
 )
@@ -25,6 +25,16 @@ model = PeftModel.from_pretrained(
 )
 
 model.eval()
+
+def tokenize(text):
+    result = tokenizer(
+        text,
+        truncation=True,
+        max_length=128,
+        padding=False,
+        return_tensors="pt",
+        )
+    return result["input_ids"].to(device)
 
 def generate(
         text: str,
