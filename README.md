@@ -26,4 +26,4 @@ python chatunitest_completion_route.py
 ### Fine-Tuning Method
 
 The fine-tuning process of codellama-testgen2.
-![finetune](img/finetune-process.jpg)
+![finetune](img/fine-tuning.png)
